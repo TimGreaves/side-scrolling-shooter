@@ -14,6 +14,12 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+
+    pressed_keys = pygame.key.get_pressed()
+    if pressed_keys[pygame.K_UP]:
+        player_rect = player_rect.move(0, -1)
+    if pressed_keys[pygame.K_DOWN]:
+        player_rect = player_rect.move(0, 1)
     
     screen.fill(black)
     screen.blit(player, player_rect)

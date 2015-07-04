@@ -12,7 +12,8 @@ player_rect = player.get_rect()
 
 while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:            
+        if event.type == pygame.QUIT:
+            pygame.quit()
             sys.exit()
 
     pressed_keys = pygame.key.get_pressed()

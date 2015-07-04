@@ -5,9 +5,13 @@ class PlayerShip(object):
 
     SPEED = 1
 
-    def __init__(self, start_x, start_y):
+    def __init__(self, start_x, start_y, max_x, max_y, ship_height, ship_width):
         self._x = start_x
         self._y = start_y
+        self._max_x = max_x
+        self._max_y = max_y
+        self._ship_height = ship_height
+        self._ship_width = ship_width
 
     def move_up(self):
         self._y -= PlayerShip.SPEED
@@ -21,8 +25,21 @@ class PlayerShip(object):
     def move_right(self):
         self._x += PlayerShip.SPEED
 
+    def check_bounds(self):
+        if self._x < 0:
+            self._x = 0
+        if self._x > self._max_x - self._ship_width:
+            self._x = self._max_x - self._ship_width
+        if self._y < 0:
+            self._y = 0
+        if self._y > self._max_y - self._ship_height:
+            self._y = self._max_y - self._ship_height
+
     def get_position(self):
+        self.check_bounds()
         return (self._x, self._y)
+
+
 
 
 def process_events():
@@ -48,7 +65,7 @@ black = 0, 0, 0
 
 screen = pygame.display.set_mode(size)
 player_image = pygame.image.load("resources/PlayerShip.png")
-player = PlayerShip(0, 0)
+player = PlayerShip(0, 0, width, height, player_image.get_height(), player_image.get_width())
 
 while True:
     process_events()

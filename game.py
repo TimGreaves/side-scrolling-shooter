@@ -52,7 +52,7 @@ class Shot(object):
         return self._position
 
     def update_position(self):
-        self._position = (self._position[0] + 2, self._position[1])
+        self._position = (self._position[0] + 4, self._position[1])
 
     def out_of_bounds(self, width):
         return self._position[0] > width
@@ -75,11 +75,17 @@ def update_screen():
     pygame.display.update()
 
 def fire_shot():
+    global shot_timer
+    if shot_timer > 0:
+        return
     shot_location = player.get_shot_location()
     new_shot = Shot(shot_location)
     shots.append(new_shot)
+    shot_timer = 8
 
 def update_shots():
+    global shot_timer
+    shot_timer -= 1
     for s in shots:
         s.update_position()
         if s.out_of_bounds(640):
@@ -97,6 +103,7 @@ clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
 shots = []
+shot_timer = 0
 
 while True:
     process_events()

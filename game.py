@@ -39,7 +39,23 @@ class PlayerShip(object):
         self.check_bounds()
         return (self._x, self._y)
 
+    def get_shot_location(self):
+        return (self._x + 20, self._y + 20)
 
+
+class Shot(object):
+
+    def __init__(self, start_location):
+        self._position = start_location    
+   
+    def get_position(self):
+        return self._position
+
+    def update_position(self):
+        self._position = (self._position[0] + 2, self._position[1])
+
+    def out_of_bounds(self, width):
+        return self._position[0] > width
 
 
 def process_events():
@@ -54,9 +70,20 @@ def exit_game():
 def update_screen():
     screen.fill(black)
     screen.blit(player_image, player.get_position())
+    for s in shots:
+        screen.blit(shot_image, s.get_position())
     pygame.display.update()
 
+def fire_shot():
+    shot_location = player.get_shot_location()
+    new_shot = Shot(shot_location)
+    shots.append(new_shot)
 
+def update_shots():
+    for s in shots:
+        s.update_position()
+        if s.out_of_bounds(640):
+            shots.remove(s)
 
 pygame.init()
 
@@ -66,6 +93,9 @@ black = 0, 0, 0
 screen = pygame.display.set_mode(size)
 player_image = pygame.image.load("resources/PlayerShip.png")
 player = PlayerShip(0, 0, width, height, player_image.get_height(), player_image.get_width())
+
+shot_image = pygame.image.load("resources/Shot.png")
+shots = []
 
 while True:
     process_events()
@@ -79,6 +109,9 @@ while True:
         player.move_left()
     if pressed_keys[pygame.K_RIGHT]:
         player.move_right()
-   
+    if pressed_keys[pygame.K_SPACE]:
+        fire_shot()
+
+    update_shots()   
     update_screen()
 

@@ -93,6 +93,7 @@ black = 0, 0, 0
 screen = pygame.display.set_mode(size)
 player_image = pygame.image.load("resources/PlayerShip.png")
 player = PlayerShip(0, 0, width, height, player_image.get_height(), player_image.get_width())
+clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
 shots = []
@@ -115,3 +116,4 @@ while True:
     update_shots()   
     update_screen()
 
+    clock.tick(60)

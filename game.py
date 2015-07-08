@@ -3,7 +3,7 @@ import pygame
 
 class PlayerShip(object):
 
-    SPEED = 1
+    SPEED = 3
 
     def __init__(self, start_x, start_y, max_x, max_y, ship_height, ship_width):
         self._x = start_x
@@ -12,6 +12,10 @@ class PlayerShip(object):
         self._max_y = max_y
         self._ship_height = ship_height
         self._ship_width = ship_width
+        self.moving_up = False
+        self.moving_down = False
+        self.moving_left = False
+        self.moving_right = False
 
     def move_up(self):
         self._y -= PlayerShip.SPEED
@@ -24,6 +28,16 @@ class PlayerShip(object):
 
     def move_right(self):
         self._x += PlayerShip.SPEED
+
+    def update(self):
+        if self.moving_up:
+            self.move_up()
+        if self.moving_down:
+            self.move_down()
+        if self.moving_left:
+            self.move_left()
+        if self.moving_right:
+            self.move_right()
 
     def check_bounds(self):
         if self._x < 0:
@@ -62,6 +76,24 @@ def process_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit_game()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                player.moving_up = True
+            elif event.key == pygame.K_DOWN:
+                player.moving_down = True
+            elif event.key == pygame.K_LEFT:
+                player.moving_left = True
+            elif event.key == pygame.K_RIGHT:
+                player.moving_right = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                player.moving_up = False        
+            elif event.key == pygame.K_DOWN:
+                player.moving_down = False
+            elif event.key == pygame.K_LEFT:
+                player.moving_left = False
+            elif event.key == pygame.K_RIGHT:
+                player.moving_right = False
 
 def exit_game():
     pygame.quit()
@@ -109,18 +141,12 @@ while True:
     process_events()
 
     pressed_keys = pygame.key.get_pressed()
-    if pressed_keys[pygame.K_UP]:
-        player.move_up()
-    if pressed_keys[pygame.K_DOWN]:
-        player.move_down()
-    if pressed_keys[pygame.K_LEFT]:
-        player.move_left()
-    if pressed_keys[pygame.K_RIGHT]:
-        player.move_right()
-    if pressed_keys[pygame.K_SPACE]:
+    if pressed_keys[pygame.K_LCTRL]:
         fire_shot()
 
-    update_shots()   
+    player.update()
+    update_shots()
+    
     update_screen()
 
     clock.tick(60)

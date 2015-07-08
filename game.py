@@ -1,35 +1,36 @@
 import sys
 import pygame
 
-class PlayerShip(object):
+class PlayerShip(pygame.sprite.Sprite):
 
     SPEED = 3
 
-    def __init__(self, start_x, start_y, max_x, max_y, ship_height, ship_width):
-        self._x = start_x
-        self._y = start_y
-        self._max_x = max_x - ship_width
-        self._max_y = max_y - ship_height
+    def __init__(self, image, start_pos, bounds):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = image.get_rect()
+        self.rect.topleft = start_pos
+        self._bounds = bounds
         self.moving_up = False
         self.moving_down = False
         self.moving_left = False
         self.moving_right = False
 
     def move_up(self):
-        self._y -= PlayerShip.SPEED
-        self._y = max(self._y, 0)
+        self.rect.top -= PlayerShip.SPEED
+        self.rect.top = max(self.rect.top, 0)
 
     def move_down(self):
-        self._y += PlayerShip.SPEED
-        self._y = min(self._y, self._max_y)
+        self.rect.bottom += PlayerShip.SPEED
+        self.rect.bottom = min(self.rect.bottom, self._bounds[1])
 
     def move_left(self):
-        self._x -= PlayerShip.SPEED
-        self._x = max(self._x, 0)
+        self.rect.left -= PlayerShip.SPEED
+        self.rect.left = max(self.rect.left, 0)
 
     def move_right(self):
-        self._x += PlayerShip.SPEED
-        self._x = min(self._x, self._max_x)
+        self.rect.right += PlayerShip.SPEED
+        self.rect.right = min(self.rect.right, self._bounds[0])
         
     def update(self):
         if self.moving_up:
@@ -39,13 +40,10 @@ class PlayerShip(object):
         if self.moving_left:
             self.move_left()
         if self.moving_right:
-            self.move_right()
-
-    def get_position(self):
-        return (self._x, self._y)
+            self.move_right()        
 
     def get_shot_location(self):
-        return (self._x + 20, self._y + 20)
+        return (self.rect.right, self.rect.centery)
 
 
 class Shot(object):
@@ -92,7 +90,7 @@ def exit_game():
 
 def update_screen():
     screen.fill(black)
-    screen.blit(player_image, player.get_position())
+    sprites.draw(screen)
     for s in shots:
         screen.blit(shot_image, s.get_position())
     pygame.display.update()
@@ -121,7 +119,9 @@ black = 0, 0, 0
 
 screen = pygame.display.set_mode(size)
 player_image = pygame.image.load("resources/PlayerShip.png")
-player = PlayerShip(0, 0, width, height, player_image.get_height(), player_image.get_width())
+player = PlayerShip(player_image, (0, 0), (width, height))
+sprites = pygame.sprite.Group()
+sprites.add(player)
 clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
@@ -135,7 +135,7 @@ while True:
     if pressed_keys[pygame.K_LCTRL]:
         fire_shot()
 
-    player.update()
+    sprites.update()
     update_shots()
     
     update_screen()

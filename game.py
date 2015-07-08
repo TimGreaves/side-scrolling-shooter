@@ -79,23 +79,20 @@ def process_events():
         if event.type == pygame.QUIT:
             exit_game()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                player.moving_up = True
-            elif event.key == pygame.K_DOWN:
-                player.moving_down = True
-            elif event.key == pygame.K_LEFT:
-                player.moving_left = True
-            elif event.key == pygame.K_RIGHT:
-                player.moving_right = True
+            process_movement_keys(event.key, True)
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP:
-                player.moving_up = False        
-            elif event.key == pygame.K_DOWN:
-                player.moving_down = False
-            elif event.key == pygame.K_LEFT:
-                player.moving_left = False
-            elif event.key == pygame.K_RIGHT:
-                player.moving_right = False
+            process_movement_keys(event.key, False)
+
+def process_movement_keys(key, is_key_down):
+    if key == pygame.K_UP:
+        player.moving_up = is_key_down
+    elif key == pygame.K_DOWN:
+        player.moving_down = is_key_down
+    elif key == pygame.K_LEFT:
+        player.moving_left = is_key_down
+    elif key == pygame.K_RIGHT:
+        player.moving_right = is_key_down
+    
 
 def exit_game():
     pygame.quit()

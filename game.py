@@ -16,31 +16,15 @@ class PlayerShip(pygame.sprite.Sprite):
         self.moving_left = False
         self.moving_right = False
 
-    def move_up(self):
-        self.rect.top -= PlayerShip.SPEED
-        self.rect.top = max(self.rect.top, 0)
-
-    def move_down(self):
-        self.rect.bottom += PlayerShip.SPEED
-        self.rect.bottom = min(self.rect.bottom, self._bounds[1])
-
-    def move_left(self):
-        self.rect.left -= PlayerShip.SPEED
-        self.rect.left = max(self.rect.left, 0)
-
-    def move_right(self):
-        self.rect.right += PlayerShip.SPEED
-        self.rect.right = min(self.rect.right, self._bounds[0])
-        
     def update(self):
         if self.moving_up:
-            self.move_up()
+            self.rect.top = max(self.rect.top - PlayerShip.SPEED, 0)
         if self.moving_down:
-            self.move_down()
+            self.rect.bottom = min(self.rect.bottom + PlayerShip.SPEED, self._bounds[1])
         if self.moving_left:
-            self.move_left()
+            self.rect.left = max(self.rect.left - PlayerShip.SPEED, 0)
         if self.moving_right:
-            self.move_right()        
+            self.rect.right = min(self.rect.right + PlayerShip.SPEED, self._bounds[0])
 
     def get_shot_location(self):
         return (self.rect.right, self.rect.centery)

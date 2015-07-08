@@ -47,6 +47,33 @@ class Shot(pygame.sprite.Sprite):
             self.kill()
 
 
+class ShotManager(object):
+
+    COOLDOWN_INTERVAL = 8
+
+    def __init__(self, image, player, bounds):
+        self._image = image
+        self._player = player
+        self._bounds = bounds
+        self._shots = pygame.sprite.Group()
+        self._cooldown = 0
+
+    def fire_shot(self):
+        if self._cooldown > 0:
+            return
+        shot_location = self._player.get_shot_location()
+        new_shot = Shot(self._image, shot_location, self._bounds)
+        self._shots.add(new_shot)
+        self._cooldown = ShotManager.COOLDOWN_INTERVAL
+        
+    def update(self):
+        self._cooldown -= 1
+        self._shots.update()
+
+    def draw(self, surface):
+        self._shots.draw(surface)
+
+
 def process_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -76,18 +103,11 @@ def exit_game():
 
 def update_screen():
     screen.fill(black)
-    sprites.draw(screen)
+    sprites.draw(screen)    
+    shot_manager.draw(screen)
     pygame.display.update()
 
-def fire_shot():
-    global shot_timer
-    if shot_timer > 0:
-        return
-    shot_location = player.get_shot_location()
-    new_shot = Shot(shot_image, shot_location, (width, height))
-    sprites.add(new_shot)
-    shot_timer = 8
-       
+     
 pygame.init()
 
 size = width, height = 640, 480
@@ -101,17 +121,17 @@ sprites.add(player)
 clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
-shot_timer = 0
+shot_manager = ShotManager(shot_image, player, (width, height))
 
 while True:
     process_events()
 
     pressed_keys = pygame.key.get_pressed()
     if pressed_keys[pygame.K_LCTRL]:
-        fire_shot()
+        shot_manager.fire_shot()
 
     sprites.update()
-    shot_timer -= 1    
+    shot_manager.update()
     
     update_screen()
 

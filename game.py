@@ -104,7 +104,12 @@ def exit_game():
     pygame.quit()
     sys.exit()
 
-def update_screen():
+def update_objects():
+    sprites.update()
+    shot_manager.update()
+
+def draw_screen():
+    black = 0, 0, 0
     screen.fill(black)
     sprites.draw(screen)    
     shot_manager.draw(screen)
@@ -113,25 +118,21 @@ def update_screen():
      
 pygame.init()
 
-size = width, height = 640, 480
-black = 0, 0, 0
+size = 640, 480
+start_pos = 0, 0
 
 screen = pygame.display.set_mode(size)
 player_image = pygame.image.load("resources/PlayerShip.png")
-player = PlayerShip(player_image, (0, 0), (width, height))
+player = PlayerShip(player_image, start_pos, size)
 sprites = pygame.sprite.Group()
 sprites.add(player)
 clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
-shot_manager = ShotManager(shot_image, player, (width, height))
+shot_manager = ShotManager(shot_image, player, size)
 
 while True:
     process_events()
-
-    sprites.update()
-    shot_manager.update()
-    
-    update_screen()
-
+    update_objects()   
+    draw_screen()
     clock.tick(60)

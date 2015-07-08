@@ -8,10 +8,8 @@ class PlayerShip(object):
     def __init__(self, start_x, start_y, max_x, max_y, ship_height, ship_width):
         self._x = start_x
         self._y = start_y
-        self._max_x = max_x
-        self._max_y = max_y
-        self._ship_height = ship_height
-        self._ship_width = ship_width
+        self._max_x = max_x - ship_width
+        self._max_y = max_y - ship_height
         self.moving_up = False
         self.moving_down = False
         self.moving_left = False
@@ -19,16 +17,20 @@ class PlayerShip(object):
 
     def move_up(self):
         self._y -= PlayerShip.SPEED
+        self._y = max(self._y, 0)
 
     def move_down(self):
         self._y += PlayerShip.SPEED
+        self._y = min(self._y, self._max_y)
 
     def move_left(self):
         self._x -= PlayerShip.SPEED
+        self._x = max(self._x, 0)
 
     def move_right(self):
         self._x += PlayerShip.SPEED
-
+        self._x = min(self._x, self._max_x)
+        
     def update(self):
         if self.moving_up:
             self.move_up()
@@ -39,18 +41,7 @@ class PlayerShip(object):
         if self.moving_right:
             self.move_right()
 
-    def check_bounds(self):
-        if self._x < 0:
-            self._x = 0
-        if self._x > self._max_x - self._ship_width:
-            self._x = self._max_x - self._ship_width
-        if self._y < 0:
-            self._y = 0
-        if self._y > self._max_y - self._ship_height:
-            self._y = self._max_y - self._ship_height
-
     def get_position(self):
-        self.check_bounds()
         return (self._x, self._y)
 
     def get_shot_location(self):

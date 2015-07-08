@@ -57,17 +57,18 @@ class ShotManager(object):
         self._bounds = bounds
         self._shots = pygame.sprite.Group()
         self._cooldown = 0
+        self.is_firing = False
 
     def fire_shot(self):
-        if self._cooldown > 0:
-            return
         shot_location = self._player.get_shot_location()
         new_shot = Shot(self._image, shot_location, self._bounds)
         self._shots.add(new_shot)
         self._cooldown = ShotManager.COOLDOWN_INTERVAL
         
     def update(self):
-        self._cooldown -= 1
+        self._cooldown = max(0, self._cooldown - 1)
+        if self.is_firing and self._cooldown == 0:
+            self.fire_shot()
         self._shots.update()
 
     def draw(self, surface):
@@ -80,8 +81,10 @@ def process_events():
             exit_game()
         if event.type == pygame.KEYDOWN:
             process_movement_keys(event.key, True)
+            process_shot_keys(event.key, True)
         if event.type == pygame.KEYUP:
             process_movement_keys(event.key, False)
+            process_shot_keys(event.key, False)
 
 def process_movement_keys(key, is_key_down):
     if key == pygame.K_UP:
@@ -92,7 +95,10 @@ def process_movement_keys(key, is_key_down):
         player.moving_left = is_key_down
     elif key == pygame.K_RIGHT:
         player.moving_right = is_key_down
-    
+
+def process_shot_keys(key, is_key_down):
+    if key == pygame.K_LCTRL:
+        shot_manager.is_firing = is_key_down
 
 def exit_game():
     pygame.quit()
@@ -122,10 +128,6 @@ shot_manager = ShotManager(shot_image, player, (width, height))
 
 while True:
     process_events()
-
-    pressed_keys = pygame.key.get_pressed()
-    if pressed_keys[pygame.K_LCTRL]:
-        shot_manager.fire_shot()
 
     sprites.update()
     shot_manager.update()

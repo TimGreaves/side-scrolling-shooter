@@ -30,19 +30,21 @@ class PlayerShip(pygame.sprite.Sprite):
         return (self.rect.right, self.rect.centery)
 
 
-class Shot(object):
+class Shot(pygame.sprite.Sprite):
 
-    def __init__(self, start_location):
-        self._position = start_location    
+    SPEED = 4
+
+    def __init__(self, image, start_pos, bounds):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = image.get_rect()
+        self.rect.topleft = start_pos
+        self._bounds = bounds
    
-    def get_position(self):
-        return self._position
-
-    def update_position(self):
-        self._position = (self._position[0] + 4, self._position[1])
-
-    def out_of_bounds(self, width):
-        return self._position[0] > width
+    def update(self):
+        self.rect.left += Shot.SPEED
+        if self.rect.left > self._bounds[0]:
+            self.kill()
 
 
 def process_events():
@@ -75,8 +77,6 @@ def exit_game():
 def update_screen():
     screen.fill(black)
     sprites.draw(screen)
-    for s in shots:
-        screen.blit(shot_image, s.get_position())
     pygame.display.update()
 
 def fire_shot():
@@ -84,18 +84,10 @@ def fire_shot():
     if shot_timer > 0:
         return
     shot_location = player.get_shot_location()
-    new_shot = Shot(shot_location)
-    shots.append(new_shot)
+    new_shot = Shot(shot_image, shot_location, (width, height))
+    sprites.add(new_shot)
     shot_timer = 8
-
-def update_shots():
-    global shot_timer
-    shot_timer -= 1
-    for s in shots:
-        s.update_position()
-        if s.out_of_bounds(640):
-            shots.remove(s)
-
+       
 pygame.init()
 
 size = width, height = 640, 480
@@ -109,7 +101,6 @@ sprites.add(player)
 clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
-shots = []
 shot_timer = 0
 
 while True:
@@ -120,7 +111,7 @@ while True:
         fire_shot()
 
     sprites.update()
-    update_shots()
+    shot_timer -= 1    
     
     update_screen()
 

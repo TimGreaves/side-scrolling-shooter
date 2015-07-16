@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 
 class PlayerShip(pygame.sprite.Sprite):
 
@@ -109,7 +110,8 @@ class EnemyManager(object):
 
     def spawn_enemy(self):
         image = pygame.image.load("resources/EnemyShip.png")
-        enemy = EnemyShip(image, (self._bounds[0], 200), self._bounds)
+        starty = random.randint(0, self._bounds[1])
+        enemy = EnemyShip(image, (self._bounds[0], starty), self._bounds)
         self._enemies.add(enemy)
         self._cooldown = EnemyManager.ENEMY_RATE
     

@@ -75,6 +75,48 @@ class ShotManager(object):
         self._shots.draw(surface)
 
 
+class EnemyShip(pygame.sprite.Sprite):
+
+    SHIP_SPEED = 4
+
+    def __init__(self, image, start_position, bounds):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = image.get_rect()
+        self.rect.topleft = start_position
+        self._bounds = bounds
+
+    def update(self):
+        self.rect.left -= EnemyShip.SHIP_SPEED
+        if self.rect.right < 0:
+            self.kill()
+            
+
+class EnemyManager(object):
+
+    ENEMY_RATE = 90
+
+    def __init__(self, bounds):
+        self._cooldown = EnemyManager.ENEMY_RATE
+        self._enemies = pygame.sprite.Group()
+        self._bounds = bounds
+
+    def update(self):
+        self._cooldown -= 1
+        if self._cooldown == 0:
+            self.spawn_enemy()
+        self._enemies.update()
+
+    def spawn_enemy(self):
+        image = pygame.image.load("resources/EnemyShip.png")
+        enemy = EnemyShip(image, (self._bounds[0], 200), self._bounds)
+        self._enemies.add(enemy)
+        self._cooldown = EnemyManager.ENEMY_RATE
+    
+    def draw(self, surface):
+        self._enemies.draw(surface)
+
+
 def process_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -107,12 +149,14 @@ def exit_game():
 def update_objects():
     sprites.update()
     shot_manager.update()
+    enemy_manager.update()
 
 def draw_screen():
     black = 0, 0, 0
     screen.fill(black)
     sprites.draw(screen)    
     shot_manager.draw(screen)
+    enemy_manager.draw(screen)
     pygame.display.update()
 
      
@@ -130,6 +174,8 @@ clock = pygame.time.Clock()
 
 shot_image = pygame.image.load("resources/Shot.png")
 shot_manager = ShotManager(shot_image, player, size)
+
+enemy_manager = EnemyManager(size)
 
 while True:
     process_events()
